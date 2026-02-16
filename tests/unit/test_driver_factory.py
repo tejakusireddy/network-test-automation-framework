@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
-
 from src.core.base_driver import BaseDriver, DeviceInfo
 from src.core.exceptions import InventoryError
 from src.drivers.arista_driver import AristaDriver

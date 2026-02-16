@@ -7,18 +7,13 @@ snapshots, and BGP/interface/route data used across the test suite.
 from __future__ import annotations
 
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
-
 from src.core.base_driver import (
-    BaseDriver,
     DeviceInfo,
-    DiffEntry,
     Snapshot,
-    SnapshotDiff,
 )
-from src.core.validator import StateValidator, ValidationReport
+from src.core.validator import StateValidator
 
 # ---------------------------------------------------------------------------
 # Device info fixtures

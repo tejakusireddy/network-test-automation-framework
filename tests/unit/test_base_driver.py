@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import json
 from typing import Any
-from unittest.mock import MagicMock, patch
 
 import pytest
-
 from src.core.base_driver import (
     BaseDriver,
     BgpState,
@@ -17,7 +15,6 @@ from src.core.base_driver import (
     Snapshot,
     SnapshotDiff,
 )
-from src.core.exceptions import ConnectionError, SnapshotError
 
 # ---------------------------------------------------------------------------
 # Concrete test implementation of BaseDriver

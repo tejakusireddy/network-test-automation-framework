@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, PropertyMock
+from typing import TYPE_CHECKING
+from unittest.mock import MagicMock
 
 import pytest
-
-from src.core.base_driver import BaseDriver, DeviceInfo, Snapshot
+from src.core.base_driver import BaseDriver, Snapshot
 from src.core.exceptions import SnapshotError
 from src.core.snapshot_engine import SnapshotEngine
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.fixture

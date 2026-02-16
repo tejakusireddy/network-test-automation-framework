@@ -6,7 +6,6 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from src.core.exceptions import TriageError
 from src.triage.defect_report import DefectReport, DefectSeverity
 from src.triage.log_analyzer import LogAnalyzer

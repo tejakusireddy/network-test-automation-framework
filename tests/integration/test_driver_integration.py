@@ -10,8 +10,6 @@ import os
 from typing import Any
 
 import pytest
-
-from src.core.base_driver import DeviceInfo
 from src.core.snapshot_engine import SnapshotEngine
 from src.core.validator import StateValidator
 from src.drivers.driver_factory import DriverFactory
