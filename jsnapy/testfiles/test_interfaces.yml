@@ -1,0 +1,41 @@
+---
+test_interface_status:
+  - command: show interfaces terse
+  - iterate:
+      xpath: "//physical-interface[starts-with(name, 'et-') or starts-with(name, 'xe-') or starts-with(name, 'ge-')]"
+      id: "./name"
+      tests:
+        - is-equal:
+            oper-status: "up"
+            err: "Interface {{ id_0 }} is operationally {{ pre['oper-status'] }}, expected up"
+            info: "Interface {{ id_0 }} is operationally up"
+        - is-equal:
+            admin-status: "up"
+            err: "Interface {{ id_0 }} is admin {{ pre['admin-status'] }}, expected up"
+            info: "Interface {{ id_0 }} is admin up"
+
+test_interface_errors:
+  - command: show interfaces extensive
+  - iterate:
+      xpath: "//physical-interface[starts-with(name, 'et-') or starts-with(name, 'xe-')]"
+      id: "./name"
+      tests:
+        - is-equal:
+            input-error-list/input-errors: 0
+            err: "Interface {{ id_0 }} has {{ pre['input-error-list/input-errors'] }} input errors"
+            info: "Interface {{ id_0 }} has no input errors"
+        - is-equal:
+            output-error-list/output-errors: 0
+            err: "Interface {{ id_0 }} has {{ pre['output-error-list/output-errors'] }} output errors"
+            info: "Interface {{ id_0 }} has no output errors"
+
+test_interface_no_crc:
+  - command: show interfaces extensive
+  - iterate:
+      xpath: "//physical-interface[starts-with(name, 'et-')]"
+      id: "./name"
+      tests:
+        - is-equal:
+            input-error-list/framing-errors: 0
+            err: "Interface {{ id_0 }} has CRC/framing errors"
+            info: "Interface {{ id_0 }} has no CRC errors"

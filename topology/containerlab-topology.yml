@@ -1,0 +1,98 @@
+---
+# Containerlab topology: 3-tier leaf-spine data center fabric
+# 2x cRPD spines (route reflectors) + 4x cRPD leaves + 1x cRPD WAN edge
+#
+# Underlay: OSPF area 0 on all P2P links
+# Overlay: iBGP with spines as route reflectors, EVPN-VXLAN between leaves
+# WAN: eBGP peering from wan-edge to spine1
+
+name: dc-fabric
+
+mgmt:
+  network: dc-mgmt
+  ipv4-subnet: 172.20.20.0/24
+
+topology:
+  kinds:
+    crpd:
+      image: crpd:latest
+
+  nodes:
+    # --- Spine layer ---
+    spine1:
+      kind: crpd
+      mgmt-ipv4: 172.20.20.2
+      startup-config: configs/juniper/spine1.conf
+      labels:
+        role: spine
+        tier: aggregation
+
+    spine2:
+      kind: crpd
+      mgmt-ipv4: 172.20.20.3
+      startup-config: configs/juniper/spine2.conf
+      labels:
+        role: spine
+        tier: aggregation
+
+    # --- Leaf layer ---
+    leaf1:
+      kind: crpd
+      mgmt-ipv4: 172.20.20.4
+      startup-config: configs/juniper/leaf1.conf
+      labels:
+        role: leaf
+        tier: access
+        rack: rack-1
+
+    leaf2:
+      kind: crpd
+      mgmt-ipv4: 172.20.20.5
+      startup-config: configs/juniper/leaf2.conf
+      labels:
+        role: leaf
+        tier: access
+        rack: rack-1
+
+    leaf3:
+      kind: crpd
+      mgmt-ipv4: 172.20.20.6
+      startup-config: configs/juniper/leaf3.conf
+      labels:
+        role: leaf
+        tier: access
+        rack: rack-2
+
+    leaf4:
+      kind: crpd
+      mgmt-ipv4: 172.20.20.7
+      startup-config: configs/juniper/leaf4.conf
+      labels:
+        role: leaf
+        tier: access
+        rack: rack-2
+
+    # --- WAN edge ---
+    wan-edge:
+      kind: crpd
+      mgmt-ipv4: 172.20.20.8
+      startup-config: configs/juniper/wan-edge.conf
+      labels:
+        role: wan-edge
+        tier: border
+
+  links:
+    # Spine1 <-> Leaves (P2P /31 links)
+    - endpoints: ["spine1:eth1", "leaf1:eth1"]
+    - endpoints: ["spine1:eth2", "leaf2:eth1"]
+    - endpoints: ["spine1:eth3", "leaf3:eth1"]
+    - endpoints: ["spine1:eth4", "leaf4:eth1"]
+
+    # Spine2 <-> Leaves (P2P /31 links)
+    - endpoints: ["spine2:eth1", "leaf1:eth2"]
+    - endpoints: ["spine2:eth2", "leaf2:eth2"]
+    - endpoints: ["spine2:eth3", "leaf3:eth2"]
+    - endpoints: ["spine2:eth4", "leaf4:eth2"]
+
+    # WAN edge <-> Spine1
+    - endpoints: ["wan-edge:eth1", "spine1:eth5"]

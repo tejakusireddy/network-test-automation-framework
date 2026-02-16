@@ -1,0 +1,35 @@
+---
+test_lldp_neighbors:
+  - command: show lldp neighbors
+  - iterate:
+      xpath: "//lldp-neighbor-information"
+      id: "./lldp-local-port-id"
+      tests:
+        - exists:
+            err: "LLDP neighbor on {{ id_0 }} disappeared"
+            info: "LLDP neighbor on {{ id_0 }} is present: {{ pre['lldp-remote-system-name'] }}"
+        - no-diff:
+            lldp-remote-system-name:
+              err: "LLDP neighbor on {{ id_0 }} changed from {{ pre['lldp-remote-system-name'] }} to {{ post['lldp-remote-system-name'] }}"
+              info: "LLDP neighbor on {{ id_0 }} unchanged: {{ pre['lldp-remote-system-name'] }}"
+
+test_lldp_neighbor_count:
+  - command: show lldp neighbors
+  - item:
+      xpath: "//lldp-neighbors-information"
+      tests:
+        - no-diff:
+            lldp-neighbor-count:
+              err: "LLDP neighbor count changed from {{ pre['lldp-neighbor-count'] }} to {{ post['lldp-neighbor-count'] }}"
+              info: "LLDP neighbor count unchanged: {{ pre['lldp-neighbor-count'] }}"
+
+test_lldp_remote_port:
+  - command: show lldp neighbors
+  - iterate:
+      xpath: "//lldp-neighbor-information"
+      id: "./lldp-local-port-id"
+      tests:
+        - no-diff:
+            lldp-remote-port-id:
+              err: "LLDP remote port on {{ id_0 }} changed from {{ pre['lldp-remote-port-id'] }} to {{ post['lldp-remote-port-id'] }}"
+              info: "LLDP remote port on {{ id_0 }} unchanged"

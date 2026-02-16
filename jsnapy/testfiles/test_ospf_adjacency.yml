@@ -1,0 +1,46 @@
+---
+test_ospf_neighbors:
+  - command: show ospf neighbor
+  - iterate:
+      xpath: "//ospf-neighbor"
+      id: "./neighbor-address"
+      tests:
+        - is-equal:
+            ospf-neighbor-state: "Full"
+            err: "OSPF neighbor {{ id_0 }} is in {{ pre['ospf-neighbor-state'] }} state, expected Full"
+            info: "OSPF neighbor {{ id_0 }} is in Full state"
+
+test_ospf_neighbor_count:
+  - command: show ospf neighbor
+  - item:
+      xpath: "//ospf-neighbor-information"
+      tests:
+        - no-diff:
+            ospf-neighbor-count:
+              err: "OSPF neighbor count changed from {{ pre['ospf-neighbor-count'] }} to {{ post['ospf-neighbor-count'] }}"
+              info: "OSPF neighbor count unchanged: {{ pre['ospf-neighbor-count'] }}"
+
+test_ospf_interface_status:
+  - command: show ospf interface
+  - iterate:
+      xpath: "//ospf-interface[not(contains(interface-name, 'lo0'))]"
+      id: "./interface-name"
+      tests:
+        - is-in:
+            ospf-interface-state:
+              - "BDR"
+              - "DR"
+              - "PtToPt"
+              - "DRother"
+            err: "OSPF interface {{ id_0 }} is in {{ pre['ospf-interface-state'] }} state"
+            info: "OSPF interface {{ id_0 }} is in {{ pre['ospf-interface-state'] }} state"
+
+test_ospf_database_consistency:
+  - command: show ospf database summary
+  - item:
+      xpath: "//ospf-database-information"
+      tests:
+        - no-diff:
+            ospf-database-count:
+              err: "OSPF database entry count changed"
+              info: "OSPF database consistent"

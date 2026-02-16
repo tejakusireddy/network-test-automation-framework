@@ -1,0 +1,36 @@
+hosts:
+  - device: spine1
+    username: admin
+    passwd: admin123
+    port: 830
+  - device: spine2
+    username: admin
+    passwd: admin123
+    port: 830
+  - device: leaf1
+    username: admin
+    passwd: admin123
+    port: 830
+  - device: leaf2
+    username: admin
+    passwd: admin123
+    port: 830
+  - device: leaf3
+    username: admin
+    passwd: admin123
+    port: 830
+  - device: leaf4
+    username: admin
+    passwd: admin123
+    port: 830
+  - device: wan-edge
+    username: admin
+    passwd: admin123
+    port: 830
+
+tests:
+  - testfiles/test_bgp_neighbors.yml
+  - testfiles/test_interfaces.yml
+  - testfiles/test_ospf_adjacency.yml
+  - testfiles/test_evpn_routes.yml
+  - testfiles/test_lldp_neighbors.yml

@@ -1,0 +1,29 @@
+---
+test_bgp_neighbors:
+  - command: show bgp neighbor
+  - iterate:
+      xpath: "//bgp-peer"
+      id: "./peer-address"
+      tests:
+        - is-equal:
+            peer-state: "Established"
+            err: "BGP peer {{ id_0 }} is NOT in Established state. Current state: {{ pre['peer-state'] }}"
+            info: "BGP peer {{ id_0 }} is in Established state"
+        - no-diff:
+            flap-count:
+              err: "BGP peer {{ id_0 }} flap count changed from {{ pre['flap-count'] }} to {{ post['flap-count'] }}"
+              info: "BGP peer {{ id_0 }} flap count unchanged"
+
+test_bgp_neighbor_count:
+  - command: show bgp summary
+  - item:
+      xpath: "//bgp-information"
+      tests:
+        - is-gt:
+            peer-count: 0
+            err: "No BGP peers configured"
+            info: "BGP peer count: {{ pre['peer-count'] }}"
+        - no-diff:
+            peer-count:
+              err: "BGP peer count changed from {{ pre['peer-count'] }} to {{ post['peer-count'] }}"
+              info: "BGP peer count unchanged: {{ pre['peer-count'] }}"

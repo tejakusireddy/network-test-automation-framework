@@ -1,0 +1,44 @@
+---
+test_evpn_route_table:
+  - command: show route table default-switch.evpn.0
+  - iterate:
+      xpath: "//rt"
+      id: "./rt-destination"
+      tests:
+        - exists:
+            err: "EVPN route {{ id_0 }} is missing from post snapshot"
+            info: "EVPN route {{ id_0 }} is present"
+
+test_evpn_route_count:
+  - command: show route table default-switch.evpn.0 | display xml
+  - item:
+      xpath: "//route-table"
+      tests:
+        - is-gt:
+            total-route-count: 0
+            err: "No EVPN routes found in default-switch.evpn.0"
+            info: "EVPN route count: {{ pre['total-route-count'] }}"
+        - no-diff:
+            active-route-count:
+              err: "Active EVPN route count changed from {{ pre['active-route-count'] }} to {{ post['active-route-count'] }}"
+              info: "Active EVPN route count unchanged: {{ pre['active-route-count'] }}"
+
+test_evpn_type2_routes:
+  - command: show route table default-switch.evpn.0 match-prefix "2:*"
+  - iterate:
+      xpath: "//rt"
+      id: "./rt-destination"
+      tests:
+        - exists:
+            err: "EVPN type-2 route {{ id_0 }} missing"
+            info: "EVPN type-2 route {{ id_0 }} present"
+
+test_evpn_type5_routes:
+  - command: show route table default-switch.evpn.0 match-prefix "5:*"
+  - iterate:
+      xpath: "//rt"
+      id: "./rt-destination"
+      tests:
+        - exists:
+            err: "EVPN type-5 route {{ id_0 }} missing"
+            info: "EVPN type-5 route {{ id_0 }} present"

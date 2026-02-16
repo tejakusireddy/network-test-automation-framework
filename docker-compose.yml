@@ -1,0 +1,25 @@
+---
+# Docker Compose for supporting services:
+# - Batfish: offline network config analysis
+# - Batfish serves on port 9997 (coordinator) and 9996 (work manager)
+
+services:
+  batfish:
+    image: batfish/batfish:latest
+    container_name: batfish
+    ports:
+      - "9997:9997"
+      - "9996:9996"
+    volumes:
+      - batfish-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9996/api/test"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  batfish-data:
+    driver: local
