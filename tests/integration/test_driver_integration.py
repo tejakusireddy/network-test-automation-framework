@@ -16,7 +16,6 @@ from src.core.snapshot_engine import SnapshotEngine
 from src.core.validator import StateValidator
 from src.drivers.driver_factory import DriverFactory
 
-
 pytestmark = pytest.mark.integration
 
 TOPOLOGY_HOSTS: list[dict[str, Any]] = [
@@ -63,43 +62,33 @@ class TestDriverConnectivity:
         driver.disconnect()
         assert not driver.is_connected
 
-    def test_show_version(
-        self, factory: DriverFactory, device_host: dict[str, Any]
-    ) -> None:
+    def test_show_version(self, factory: DriverFactory, device_host: dict[str, Any]) -> None:
         driver = factory.create_from_dict(device_host)
         with driver:
             output = driver.execute_command("show version")
             assert len(output) > 0
 
-    def test_get_bgp_neighbors(
-        self, factory: DriverFactory, device_host: dict[str, Any]
-    ) -> None:
+    def test_get_bgp_neighbors(self, factory: DriverFactory, device_host: dict[str, Any]) -> None:
         driver = factory.create_from_dict(device_host)
         with driver:
             bgp = driver.get_bgp_neighbors()
             assert isinstance(bgp, dict)
 
-    def test_get_interfaces(
-        self, factory: DriverFactory, device_host: dict[str, Any]
-    ) -> None:
+    def test_get_interfaces(self, factory: DriverFactory, device_host: dict[str, Any]) -> None:
         driver = factory.create_from_dict(device_host)
         with driver:
             ifaces = driver.get_interfaces()
             assert isinstance(ifaces, dict)
             assert len(ifaces) > 0
 
-    def test_take_snapshot(
-        self, factory: DriverFactory, device_host: dict[str, Any]
-    ) -> None:
+    def test_take_snapshot(self, factory: DriverFactory, device_host: dict[str, Any]) -> None:
         driver = factory.create_from_dict(device_host)
         with driver:
             snapshot = driver.take_snapshot("integration-test")
             assert snapshot.device == device_host["hostname"]
             assert snapshot.snapshot_id == "integration-test"
 
-    def test_health_check(
-        self, factory: DriverFactory, device_host: dict[str, Any]
-    ) -> None:
+    def test_health_check(self, factory: DriverFactory, device_host: dict[str, Any]) -> None:
         driver = factory.create_from_dict(device_host)
         with driver:
             report = driver.run_health_check()

@@ -70,9 +70,7 @@ class ReportData:
     """
 
     title: str = "Network Test Automation Report"
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     environment: dict[str, str] = field(default_factory=dict)
     test_results: list[TestResult] = field(default_factory=list)
     validation_reports: list[dict[str, Any]] = field(default_factory=list)
@@ -144,46 +142,50 @@ class ReportGenerator:
 
     def add_validation_report(self, report: ValidationReport) -> None:
         """Add a per-device validation report."""
-        self._data.validation_reports.append({
-            "device": report.device,
-            "passed": report.passed,
-            "pass_count": report.pass_count,
-            "fail_count": report.fail_count,
-            "summary": report.summary(),
-            "results": [
-                {
-                    "name": r.name,
-                    "passed": r.passed,
-                    "message": r.message,
-                    "severity": r.severity.value,
-                    "expected": str(r.expected),
-                    "actual": str(r.actual),
-                }
-                for r in report.results
-            ],
-        })
+        self._data.validation_reports.append(
+            {
+                "device": report.device,
+                "passed": report.passed,
+                "pass_count": report.pass_count,
+                "fail_count": report.fail_count,
+                "summary": report.summary(),
+                "results": [
+                    {
+                        "name": r.name,
+                        "passed": r.passed,
+                        "message": r.message,
+                        "severity": r.severity.value,
+                        "expected": str(r.expected),
+                        "actual": str(r.actual),
+                    }
+                    for r in report.results
+                ],
+            }
+        )
 
     def add_snapshot_diff(self, diff: SnapshotDiff) -> None:
         """Add a snapshot comparison result."""
-        self._data.snapshot_diffs.append({
-            "device": diff.device,
-            "pre_id": diff.pre_id,
-            "post_id": diff.post_id,
-            "has_changes": diff.has_changes,
-            "added_count": len(diff.added),
-            "removed_count": len(diff.removed),
-            "changed_count": len(diff.changed),
-            "diffs": [
-                {
-                    "category": d.category,
-                    "key": d.key,
-                    "action": d.action,
-                    "before": str(d.before) if d.before else "",
-                    "after": str(d.after) if d.after else "",
-                }
-                for d in diff.diffs
-            ],
-        })
+        self._data.snapshot_diffs.append(
+            {
+                "device": diff.device,
+                "pre_id": diff.pre_id,
+                "post_id": diff.post_id,
+                "has_changes": diff.has_changes,
+                "added_count": len(diff.added),
+                "removed_count": len(diff.removed),
+                "changed_count": len(diff.changed),
+                "diffs": [
+                    {
+                        "category": d.category,
+                        "key": d.key,
+                        "action": d.action,
+                        "before": str(d.before) if d.before else "",
+                        "after": str(d.after) if d.after else "",
+                    }
+                    for d in diff.diffs
+                ],
+            }
+        )
 
     def add_triage_report(self, defect: DefectReport) -> None:
         """Add an AI-generated defect triage report."""
@@ -218,7 +220,7 @@ class ReportGenerator:
 
         """
         try:
-            from weasyprint import HTML  # type: ignore[import-untyped]
+            from weasyprint import HTML
         except ImportError:
             raise RuntimeError(
                 "weasyprint is not installed. Install with: pip install weasyprint"
@@ -235,7 +237,7 @@ class ReportGenerator:
     def _render(self) -> str:
         """Render the Jinja2 template with report data."""
         try:
-            from jinja2 import Environment, FileSystemLoader  # type: ignore[import-untyped]
+            from jinja2 import Environment, FileSystemLoader
         except ImportError:
             raise RuntimeError(
                 "jinja2 is not installed. Install with: pip install Jinja2"

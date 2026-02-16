@@ -67,13 +67,26 @@ class TestDriverFactory:
         class CustomDriver(BaseDriver):
             def connect(self) -> None: ...
             def disconnect(self) -> None: ...
-            def get_bgp_neighbors(self) -> dict[str, Any]: return {}
-            def get_interfaces(self) -> dict[str, Any]: return {}
-            def get_routing_table(self) -> dict[str, Any]: return {}
-            def get_lldp_neighbors(self) -> dict[str, Any]: return {}
-            def get_evpn_routes(self) -> dict[str, Any]: return {}
-            def push_config(self, config: str) -> bool: return True
-            def execute_command(self, command: str) -> str: return ""
+            def get_bgp_neighbors(self) -> dict[str, Any]:
+                return {}
+
+            def get_interfaces(self) -> dict[str, Any]:
+                return {}
+
+            def get_routing_table(self) -> dict[str, Any]:
+                return {}
+
+            def get_lldp_neighbors(self) -> dict[str, Any]:
+                return {}
+
+            def get_evpn_routes(self) -> dict[str, Any]:
+                return {}
+
+            def push_config(self, config: str) -> bool:
+                return True
+
+            def execute_command(self, command: str) -> str:
+                return ""
 
         factory.register("custom-vendor", CustomDriver)
         driver = factory.create("custom-vendor", juniper_device_info)
@@ -91,9 +104,7 @@ class TestDriverFactory:
         assert isinstance(driver, JuniperDriver)
         assert driver.hostname == "spine1"
 
-    def test_create_from_dict_missing_vendor_raises(
-        self, factory: DriverFactory
-    ) -> None:
+    def test_create_from_dict_missing_vendor_raises(self, factory: DriverFactory) -> None:
         with pytest.raises(InventoryError, match="missing"):
             factory.create_from_dict({"hostname": "test"})
 
@@ -103,20 +114,31 @@ class TestDriverFactory:
         assert "cisco" in vendors
         assert "arista" in vendors
 
-    def test_custom_drivers_in_constructor(
-        self, juniper_device_info: DeviceInfo
-    ) -> None:
+    def test_custom_drivers_in_constructor(self, juniper_device_info: DeviceInfo) -> None:
 
         class MyDriver(BaseDriver):
             def connect(self) -> None: ...
             def disconnect(self) -> None: ...
-            def get_bgp_neighbors(self) -> dict[str, Any]: return {}
-            def get_interfaces(self) -> dict[str, Any]: return {}
-            def get_routing_table(self) -> dict[str, Any]: return {}
-            def get_lldp_neighbors(self) -> dict[str, Any]: return {}
-            def get_evpn_routes(self) -> dict[str, Any]: return {}
-            def push_config(self, config: str) -> bool: return True
-            def execute_command(self, command: str) -> str: return ""
+            def get_bgp_neighbors(self) -> dict[str, Any]:
+                return {}
+
+            def get_interfaces(self) -> dict[str, Any]:
+                return {}
+
+            def get_routing_table(self) -> dict[str, Any]:
+                return {}
+
+            def get_lldp_neighbors(self) -> dict[str, Any]:
+                return {}
+
+            def get_evpn_routes(self) -> dict[str, Any]:
+                return {}
+
+            def push_config(self, config: str) -> bool:
+                return True
+
+            def execute_command(self, command: str) -> str:
+                return ""
 
         factory = DriverFactory(custom_drivers={"myvendor": MyDriver})
         driver = factory.create("myvendor", juniper_device_info)

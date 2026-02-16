@@ -116,7 +116,7 @@ class InventoryManager:
 
     def _load_nornir(self) -> None:
         """Initialize Nornir with SimpleInventory plugin."""
-        from nornir import InitNornir  # type: ignore[import-untyped]
+        from nornir import InitNornir
 
         self._nornir = InitNornir(
             runner={"plugin": "threaded", "options": {"num_workers": 10}},
@@ -124,12 +124,10 @@ class InventoryManager:
                 "plugin": "SimpleInventory",
                 "options": {
                     "host_file": str(self._hosts_file),
-                    "group_file": str(self._groups_file)
-                    if self._groups_file.exists()
-                    else None,
-                    "defaults_file": str(self._defaults_file)
-                    if self._defaults_file.exists()
-                    else None,
+                    "group_file": str(self._groups_file) if self._groups_file.exists() else None,
+                    "defaults_file": (
+                        str(self._defaults_file) if self._defaults_file.exists() else None
+                    ),
                 },
             },
         )
@@ -147,7 +145,7 @@ class InventoryManager:
 
     def _load_yaml(self) -> None:
         """Fall back to loading hosts from a YAML file without Nornir."""
-        import yaml  # type: ignore[import-untyped]
+        import yaml
 
         if not self._hosts_file.exists():
             raise InventoryError(

@@ -98,11 +98,11 @@ class AristaDriver(BaseDriver):
                 state = peer_info.get("peerState", "unknown")
                 neighbors[peer_addr] = {
                     "peer_address": peer_addr,
-                    "state": state.lower()
-                    if isinstance(state, str)
-                    else "established"
-                    if isinstance(state, int) and state > 0
-                    else "unknown",
+                    "state": (
+                        state.lower()
+                        if isinstance(state, str)
+                        else "established" if isinstance(state, int) and state > 0 else "unknown"
+                    ),
                     "peer_as": peer_info.get("asn"),
                     "prefixes_received": peer_info.get("prefixReceived", 0),
                     "prefixes_accepted": peer_info.get("prefixAccepted", 0),
@@ -132,11 +132,7 @@ class AristaDriver(BaseDriver):
             interfaces[name] = {
                 "name": name,
                 "admin_status": info.get("interfaceStatus", "unknown").lower(),
-                "oper_status": (
-                    "up"
-                    if info.get("lineProtocolStatus", "") == "up"
-                    else "down"
-                ),
+                "oper_status": ("up" if info.get("lineProtocolStatus", "") == "up" else "down"),
                 "description": info.get("description", ""),
                 "speed": info.get("bandwidth", 0),
                 "mtu": info.get("mtu", 0),
@@ -173,9 +169,7 @@ class AristaDriver(BaseDriver):
                     "next_hop": next_hop or next_hop_if,
                     "preference": route_info.get("preference", 0),
                     "metric": route_info.get("metric", 0),
-                    "directly_connected": route_info.get(
-                        "directlyConnected", False
-                    ),
+                    "directly_connected": route_info.get("directlyConnected", False),
                 }
 
         self._logger.debug("Retrieved %d routes", len(routes))
@@ -192,18 +186,14 @@ class AristaDriver(BaseDriver):
         result = self._eapi_command("show lldp neighbors detail")
         neighbors: dict[str, Any] = {}
 
-        for local_if, neighbor_list in result.get(
-            "lldpNeighbors", {}
-        ).items():
+        for local_if, neighbor_list in result.get("lldpNeighbors", {}).items():
             if neighbor_list:
                 n = neighbor_list[0] if isinstance(neighbor_list, list) else neighbor_list
                 neighbors[local_if] = {
                     "local_interface": local_if,
                     "remote_system": n.get("neighborDevice", ""),
                     "remote_port": n.get("neighborPort", ""),
-                    "remote_port_description": n.get(
-                        "neighborPortDescription", ""
-                    ),
+                    "remote_port_description": n.get("neighborPortDescription", ""),
                     "remote_chassis_id": n.get("chassisId", ""),
                 }
 
@@ -277,7 +267,7 @@ class AristaDriver(BaseDriver):
         try:
             result = self._eapi_node.enable(command, encoding="text")
             if isinstance(result, list) and result:
-                return result[0].get("result", {}).get("output", "")
+                return str(result[0].get("result", {}).get("output", ""))
             return str(result)
         except Exception as exc:
             raise CommandExecutionError(
@@ -291,7 +281,7 @@ class AristaDriver(BaseDriver):
     def _connect_eapi(self) -> None:
         """Establish an eAPI connection via pyeapi."""
         try:
-            import pyeapi  # type: ignore[import-untyped]
+            import pyeapi
 
             self._eapi_node = pyeapi.connect(
                 transport="https",
@@ -316,7 +306,7 @@ class AristaDriver(BaseDriver):
     def _connect_napalm(self) -> None:
         """Establish a NAPALM EOS session."""
         try:
-            import napalm  # type: ignore[import-untyped]
+            import napalm
 
             driver_cls = napalm.get_network_driver("eos")
             self._napalm_driver = driver_cls(
@@ -331,9 +321,7 @@ class AristaDriver(BaseDriver):
             self._napalm_driver.open()
             self._logger.debug("NAPALM (EOS) connected to %s", self.hostname)
         except ImportError:
-            self._logger.warning(
-                "napalm not installed — NAPALM getters will be unavailable"
-            )
+            self._logger.warning("napalm not installed — NAPALM getters will be unavailable")
         except Exception as exc:
             self._logger.warning("NAPALM connection failed: %s", exc)
 
@@ -358,7 +346,7 @@ class AristaDriver(BaseDriver):
         try:
             result = self._eapi_node.enable(command, encoding="json")
             if isinstance(result, list) and result:
-                return result[0].get("result", {})
+                return dict(result[0].get("result", {}))
             return {}
         except Exception as exc:
             raise CommandExecutionError(

@@ -69,7 +69,7 @@ class IxiaClient(TrafficGenerator):
 
         """
         try:
-            from ixnetwork_restpy import SessionAssistant  # type: ignore[import-untyped]
+            from ixnetwork_restpy import SessionAssistant
 
             self._session = SessionAssistant(
                 IpAddress=self._api_server,
@@ -85,13 +85,10 @@ class IxiaClient(TrafficGenerator):
                 self._assign_ports()
         except ImportError:
             raise RuntimeError(
-                "ixnetwork_restpy is not installed. "
-                "Install with: pip install ixnetwork-restpy"
+                "ixnetwork_restpy is not installed. Install with: pip install ixnetwork-restpy"
             ) from None
         except Exception as exc:
-            raise RuntimeError(
-                f"Failed to connect to IxNetwork: {exc}"
-            ) from exc
+            raise RuntimeError(f"Failed to connect to IxNetwork: {exc}") from exc
 
     def disconnect(self) -> None:
         """Close the IxNetwork session.  Idempotent."""
@@ -196,9 +193,7 @@ class IxiaClient(TrafficGenerator):
         self._ensure_connected()
         stats_list: list[TrafficStats] = []
         try:
-            flow_stats = self._ixnetwork.Statistics.Stat.find(
-                Caption="Flow Statistics"
-            )
+            flow_stats = self._ixnetwork.Statistics.Stat.find(Caption="Flow Statistics")
             if not flow_stats:
                 return stats_list
 
@@ -221,15 +216,9 @@ class IxiaClient(TrafficGenerator):
                         rx_rate_pps=float(row.get("Rx Rate (fps)", 0)),
                         loss_frames=loss,
                         loss_percent=loss_pct,
-                        min_latency_us=float(
-                            row.get("Store-Forward Min Latency (us)", 0)
-                        ),
-                        max_latency_us=float(
-                            row.get("Store-Forward Max Latency (us)", 0)
-                        ),
-                        avg_latency_us=float(
-                            row.get("Store-Forward Avg Latency (us)", 0)
-                        ),
+                        min_latency_us=float(row.get("Store-Forward Min Latency (us)", 0)),
+                        max_latency_us=float(row.get("Store-Forward Max Latency (us)", 0)),
+                        avg_latency_us=float(row.get("Store-Forward Avg Latency (us)", 0)),
                         raw_data=dict(row),
                     )
                 )
@@ -268,6 +257,4 @@ class IxiaClient(TrafficGenerator):
     def _ensure_connected(self) -> None:
         """Raise if not connected to IxNetwork."""
         if self._ixnetwork is None:
-            raise RuntimeError(
-                "Not connected to IxNetwork — call connect() first"
-            )
+            raise RuntimeError("Not connected to IxNetwork — call connect() first")

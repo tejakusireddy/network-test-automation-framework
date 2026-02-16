@@ -20,7 +20,6 @@ from src.core.base_driver import (
 )
 from src.core.validator import StateValidator, ValidationReport
 
-
 # ---------------------------------------------------------------------------
 # Device info fixtures
 # ---------------------------------------------------------------------------

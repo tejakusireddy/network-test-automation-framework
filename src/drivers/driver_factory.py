@@ -110,9 +110,7 @@ class DriverFactory:
                 f"Unsupported vendor '{vendor}'. Supported: {supported}",
                 details={"vendor": vendor},
             )
-        self._logger.debug(
-            "Creating %s for %s", driver_cls.__name__, device_info.hostname
-        )
+        self._logger.debug("Creating %s for %s", driver_cls.__name__, device_info.hostname)
         return driver_cls(device_info)
 
     def create_from_dict(self, host_data: dict[str, Any]) -> BaseDriver:
@@ -163,9 +161,7 @@ class DriverFactory:
         for hostname, host in nornir.inventory.hosts.items():
             platform = host.platform or ""
             if not platform:
-                self._logger.warning(
-                    "Host %s has no platform, skipping", hostname
-                )
+                self._logger.warning("Host %s has no platform, skipping", hostname)
                 continue
 
             device_info = DeviceInfo(
@@ -175,20 +171,18 @@ class DriverFactory:
                 username=str(host.username or ""),
                 password=str(host.password or ""),
                 port=int(host.port or DEFAULT_PORTS.get(platform.lower(), 22)),
-                timeout=int(host.connection_options.get("timeout", 30))
-                if hasattr(host, "connection_options")
-                else 30,
+                timeout=(
+                    int(host.connection_options.get("timeout", 30))
+                    if hasattr(host, "connection_options")
+                    else 30
+                ),
             )
             try:
                 drivers[hostname] = self.create(platform, device_info)
             except InventoryError:
-                self._logger.warning(
-                    "No driver for host %s (platform: %s)", hostname, platform
-                )
+                self._logger.warning("No driver for host %s (platform: %s)", hostname, platform)
 
-        self._logger.info(
-            "Created %d drivers from Nornir inventory", len(drivers)
-        )
+        self._logger.info("Created %d drivers from Nornir inventory", len(drivers))
         return drivers
 
     @property

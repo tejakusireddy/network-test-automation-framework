@@ -98,10 +98,7 @@ class ValidationReport:
     def summary(self) -> str:
         """Return a one-line summary string."""
         total = len(self.results)
-        return (
-            f"[{self.device}] {self.pass_count}/{total} passed, "
-            f"{self.fail_count}/{total} failed"
-        )
+        return f"[{self.device}] {self.pass_count}/{total} passed, {self.fail_count}/{total} failed"
 
 
 class StateValidator:
@@ -264,8 +261,7 @@ class StateValidator:
             name="no_interface_errors",
             passed=passed,
             message=(
-                f"Interface {interface_name} has {total_errors} errors"
-                f" (threshold: {threshold})"
+                f"Interface {interface_name} has {total_errors} errors (threshold: {threshold})"
             ),
             severity=Severity.MEDIUM if not passed else Severity.INFO,
             expected=f"errors <= {threshold}",
@@ -310,15 +306,9 @@ class StateValidator:
 
         issues: list[str] = []
         if expected_next_hop and route.get("next_hop") != expected_next_hop:
-            issues.append(
-                f"next-hop expected {expected_next_hop}, "
-                f"got {route.get('next_hop')}"
-            )
+            issues.append(f"next-hop expected {expected_next_hop}, got {route.get('next_hop')}")
         if expected_protocol and route.get("protocol") != expected_protocol:
-            issues.append(
-                f"protocol expected {expected_protocol}, "
-                f"got {route.get('protocol')}"
-            )
+            issues.append(f"protocol expected {expected_protocol}, got {route.get('protocol')}")
 
         passed = len(issues) == 0
         return ValidationResult(
@@ -353,18 +343,13 @@ class StateValidator:
 
         """
         matching = {
-            rd: entry
-            for rd, entry in evpn_data.items()
-            if entry.get("route_type") == route_type
+            rd: entry for rd, entry in evpn_data.items() if entry.get("route_type") == route_type
         }
         count = len(matching)
 
         if expected_count is not None:
             passed = count == expected_count
-            message = (
-                f"EVPN type-{route_type}: found {count} routes "
-                f"(expected {expected_count})"
-            )
+            message = f"EVPN type-{route_type}: found {count} routes (expected {expected_count})"
         else:
             passed = count > 0
             message = (
@@ -419,8 +404,7 @@ class StateValidator:
                 name="lldp_neighbor",
                 passed=False,
                 message=(
-                    f"LLDP on {local_interface}: expected {expected_neighbor}, "
-                    f"got {remote_system}"
+                    f"LLDP on {local_interface}: expected {expected_neighbor}, got {remote_system}"
                 ),
                 severity=Severity.HIGH,
                 expected=expected_neighbor,
@@ -466,9 +450,7 @@ class StateValidator:
 
         for iface_name in interface_data:
             report.add(self.assert_interface_up(interface_data, iface_name))
-            report.add(
-                self.assert_no_interface_errors(interface_data, iface_name)
-            )
+            report.add(self.assert_no_interface_errors(interface_data, iface_name))
 
         for prefix in routing_data:
             report.add(self.assert_route_exists(routing_data, prefix))

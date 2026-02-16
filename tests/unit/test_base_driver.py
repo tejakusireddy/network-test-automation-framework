@@ -19,7 +19,6 @@ from src.core.base_driver import (
 )
 from src.core.exceptions import ConnectionError, SnapshotError
 
-
 # ---------------------------------------------------------------------------
 # Concrete test implementation of BaseDriver
 # ---------------------------------------------------------------------------

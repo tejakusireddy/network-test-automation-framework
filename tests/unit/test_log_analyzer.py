@@ -68,17 +68,17 @@ class TestLogAnalyzer:
             )
 
     @patch("src.triage.log_analyzer.LogAnalyzer._call_claude")
-    def test_successful_analysis(
-        self, mock_claude: MagicMock, analyzer: LogAnalyzer
-    ) -> None:
-        mock_claude.return_value = json.dumps({
-            "title": "BGP peer down",
-            "summary": "Peer is not establishing",
-            "probable_root_cause": "Authentication mismatch",
-            "affected_components": ["BGP", "spine1"],
-            "severity": "high",
-            "recommended_actions": ["Check MD5 keys"],
-        })
+    def test_successful_analysis(self, mock_claude: MagicMock, analyzer: LogAnalyzer) -> None:
+        mock_claude.return_value = json.dumps(
+            {
+                "title": "BGP peer down",
+                "summary": "Peer is not establishing",
+                "probable_root_cause": "Authentication mismatch",
+                "affected_components": ["BGP", "spine1"],
+                "severity": "high",
+                "recommended_actions": ["Check MD5 keys"],
+            }
+        )
 
         report = analyzer.analyze_failure(
             test_name="test_bgp",
@@ -92,9 +92,7 @@ class TestLogAnalyzer:
         assert report.device == "spine1"
 
     @patch("src.triage.log_analyzer.LogAnalyzer._call_claude")
-    def test_malformed_json_fallback(
-        self, mock_claude: MagicMock, analyzer: LogAnalyzer
-    ) -> None:
+    def test_malformed_json_fallback(self, mock_claude: MagicMock, analyzer: LogAnalyzer) -> None:
         mock_claude.return_value = "This is not JSON but a useful analysis"
 
         report = analyzer.analyze_failure(
@@ -106,17 +104,17 @@ class TestLogAnalyzer:
         assert "Unable to parse" in report.probable_root_cause
 
     @patch("src.triage.log_analyzer.LogAnalyzer._call_claude")
-    def test_batch_analysis(
-        self, mock_claude: MagicMock, analyzer: LogAnalyzer
-    ) -> None:
-        mock_claude.return_value = json.dumps({
-            "title": "Test failure",
-            "summary": "Something failed",
-            "probable_root_cause": "Unknown",
-            "affected_components": [],
-            "severity": "medium",
-            "recommended_actions": [],
-        })
+    def test_batch_analysis(self, mock_claude: MagicMock, analyzer: LogAnalyzer) -> None:
+        mock_claude.return_value = json.dumps(
+            {
+                "title": "Test failure",
+                "summary": "Something failed",
+                "probable_root_cause": "Unknown",
+                "affected_components": [],
+                "severity": "medium",
+                "recommended_actions": [],
+            }
+        )
 
         failures = [
             {"test_name": "test_a", "error_output": "error_a", "device": "d1"},

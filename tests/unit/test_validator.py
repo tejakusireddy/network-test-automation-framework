@@ -87,17 +87,13 @@ class TestAssertNoInterfaceErrors:
     def test_clean_interface_passes(
         self, validator: StateValidator, sample_interface_data: dict[str, Any]
     ) -> None:
-        result = validator.assert_no_interface_errors(
-            sample_interface_data, "et-0/0/0"
-        )
+        result = validator.assert_no_interface_errors(sample_interface_data, "et-0/0/0")
         assert result.passed is True
 
     def test_errored_interface_fails(
         self, validator: StateValidator, sample_interface_data: dict[str, Any]
     ) -> None:
-        result = validator.assert_no_interface_errors(
-            sample_interface_data, "et-0/0/2"
-        )
+        result = validator.assert_no_interface_errors(sample_interface_data, "et-0/0/2")
         assert result.passed is False
         assert result.details["input_errors"] == 5
 
@@ -168,9 +164,7 @@ class TestAssertEvpnRouteType:
     def test_exact_count_match(
         self, validator: StateValidator, sample_evpn_data: dict[str, Any]
     ) -> None:
-        result = validator.assert_evpn_route_type(
-            sample_evpn_data, route_type=2, expected_count=1
-        )
+        result = validator.assert_evpn_route_type(sample_evpn_data, route_type=2, expected_count=1)
         assert result.passed is True
 
 

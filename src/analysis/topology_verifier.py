@@ -144,8 +144,7 @@ class TopologyVerifier:
                 issue = TopologyIssue(
                     issue_type="missing_link",
                     description=(
-                        f"Expected link between {device_a} and {device_b} "
-                        f"not found in LLDP data"
+                        f"Expected link between {device_a} and {device_b} not found in LLDP data"
                     ),
                     affected_devices=[device_a, device_b],
                     severity="critical",
@@ -183,24 +182,20 @@ class TopologyVerifier:
         checked: set[tuple[str, str]] = set()
 
         for link in self._links:
-            pair = tuple(sorted([link.local_device, link.remote_device]))
+            a, b = sorted([link.local_device, link.remote_device])
+            pair = (a, b)
             if pair in checked:
                 continue
             checked.add(pair)
 
-            forward = link.remote_device in self._adjacency.get(
-                link.local_device, {}
-            ).values()
-            reverse = link.local_device in self._adjacency.get(
-                link.remote_device, {}
-            ).values()
+            forward = link.remote_device in self._adjacency.get(link.local_device, {}).values()
+            reverse = link.local_device in self._adjacency.get(link.remote_device, {}).values()
 
             if forward != reverse:
                 issue = TopologyIssue(
                     issue_type="unidirectional",
                     description=(
-                        f"Unidirectional LLDP between "
-                        f"{link.local_device} and {link.remote_device}"
+                        f"Unidirectional LLDP between {link.local_device} and {link.remote_device}"
                     ),
                     affected_devices=[link.local_device, link.remote_device],
                     severity="high",

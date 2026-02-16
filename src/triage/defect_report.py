@@ -68,9 +68,7 @@ class DefectReport:
     device: str = ""
     error_output: str = ""
     device_logs: str = ""
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_json(self) -> str:
@@ -101,8 +99,8 @@ class DefectReport:
         return f"""# {self.title}
 
 **Severity:** {self.severity.value.upper()}
-**Device:** {self.device or 'N/A'}
-**Test:** {self.test_name or 'N/A'}
+**Device:** {self.device or "N/A"}
+**Test:** {self.test_name or "N/A"}
 **Timestamp:** {self.timestamp}
 
 ## Summary
@@ -119,18 +117,18 @@ class DefectReport:
 
 ## Recommended Actions
 
-{actions if actions else 'No specific actions recommended.'}
+{actions if actions else "No specific actions recommended."}
 
 ## Error Output
 
 ```
-{self.error_output[:2000] if self.error_output else 'No error output captured.'}
+{self.error_output[:2000] if self.error_output else "No error output captured."}
 ```
 
 ## Device Logs
 
 ```
-{self.device_logs[:2000] if self.device_logs else 'No device logs captured.'}
+{self.device_logs[:2000] if self.device_logs else "No device logs captured."}
 ```
 """
 

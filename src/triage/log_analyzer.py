@@ -184,28 +184,34 @@ class LogAnalyzer:
         ]
 
         if device_logs:
-            parts.extend([
-                "",
-                "### Device Logs",
-                "```",
-                device_logs[:MAX_LOG_CHARS],
-                "```",
-            ])
+            parts.extend(
+                [
+                    "",
+                    "### Device Logs",
+                    "```",
+                    device_logs[:MAX_LOG_CHARS],
+                    "```",
+                ]
+            )
 
         if context:
-            parts.extend([
-                "",
-                "### Additional Context",
-                "```json",
-                json.dumps(context, indent=2, default=str)[:MAX_LOG_CHARS],
-                "```",
-            ])
+            parts.extend(
+                [
+                    "",
+                    "### Additional Context",
+                    "```json",
+                    json.dumps(context, indent=2, default=str)[:MAX_LOG_CHARS],
+                    "```",
+                ]
+            )
 
-        parts.extend([
-            "",
-            "Analyze this failure and respond with the JSON structure "
-            "described in the system prompt.",
-        ])
+        parts.extend(
+            [
+                "",
+                "Analyze this failure and respond with the JSON structure "
+                "described in the system prompt.",
+            ]
+        )
 
         return "\n".join(parts)
 
@@ -222,7 +228,7 @@ class LogAnalyzer:
             )
 
         try:
-            import anthropic  # type: ignore[import-untyped]
+            import anthropic
 
             client = anthropic.Anthropic(api_key=self._api_key)
             message = client.messages.create(
@@ -231,11 +237,10 @@ class LogAnalyzer:
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}],
             )
-            return message.content[0].text
+            return str(message.content[0].text)
         except ImportError:
             raise TriageError(
-                "anthropic SDK not installed. "
-                "Install with: pip install anthropic"
+                "anthropic SDK not installed. Install with: pip install anthropic"
             ) from None
         except Exception as exc:
             raise TriageError(

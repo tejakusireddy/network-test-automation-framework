@@ -67,7 +67,7 @@ class CiscoDriver(BaseDriver):
 
         """
         try:
-            import napalm  # type: ignore[import-untyped]
+            import napalm
 
             platform = NAPALM_PLATFORM_MAP.get(
                 self._device_info.platform, self._device_info.platform
@@ -147,17 +147,17 @@ class CiscoDriver(BaseDriver):
                 neighbors[peer_addr] = {
                     "peer_address": peer_addr,
                     "state": str(
-                        (peer_info.get("is_up", False) and "established") or
-                        peer_info.get("state", "unknown")
+                        (peer_info.get("is_up", False) and "established")
+                        or peer_info.get("state", "unknown")
                     ).lower(),
                     "peer_as": peer_info.get("remote_as"),
                     "local_as": peer_info.get("local_as"),
-                    "received_prefixes": peer_info.get(
-                        "address_family", {}
-                    ).get("ipv4", {}).get("received_prefixes", 0),
-                    "sent_prefixes": peer_info.get(
-                        "address_family", {}
-                    ).get("ipv4", {}).get("sent_prefixes", 0),
+                    "received_prefixes": peer_info.get("address_family", {})
+                    .get("ipv4", {})
+                    .get("received_prefixes", 0),
+                    "sent_prefixes": peer_info.get("address_family", {})
+                    .get("ipv4", {})
+                    .get("sent_prefixes", 0),
                     "is_up": peer_info.get("is_up", False),
                     "uptime": peer_info.get("uptime", 0),
                     "description": peer_info.get("description", ""),
@@ -221,9 +221,7 @@ class CiscoDriver(BaseDriver):
                         "age": best.get("age", 0),
                     }
         except (NotImplementedError, AttributeError):
-            self._logger.info(
-                "NAPALM get_route_to not supported, falling back to CLI"
-            )
+            self._logger.info("NAPALM get_route_to not supported, falling back to CLI")
             output = self._netmiko_command("show ip route")
             routes = self._parse_cisco_routes(output)
 
@@ -248,9 +246,7 @@ class CiscoDriver(BaseDriver):
                     "local_interface": local_if,
                     "remote_system": n.get("remote_system_name", ""),
                     "remote_port": n.get("remote_port", ""),
-                    "remote_port_description": n.get(
-                        "remote_port_description", ""
-                    ),
+                    "remote_port_description": n.get("remote_port_description", ""),
                     "remote_chassis_id": n.get("remote_chassis_id", ""),
                 }
 
@@ -270,9 +266,7 @@ class CiscoDriver(BaseDriver):
             output = self._netmiko_command("show bgp l2vpn evpn summary")
             routes = self._parse_evpn_summary(output)
         except Exception:
-            self._logger.debug(
-                "EVPN not supported on %s, returning empty", self.hostname
-            )
+            self._logger.debug("EVPN not supported on %s, returning empty", self.hostname)
         return routes
 
     # -- Configuration management -------------------------------------------
@@ -347,7 +341,7 @@ class CiscoDriver(BaseDriver):
             return self._netmiko_conn
 
         try:
-            from netmiko import ConnectHandler  # type: ignore[import-untyped]
+            from netmiko import ConnectHandler
 
             device_type_map: dict[str, str] = {
                 "ios": "cisco_ios",
@@ -356,9 +350,7 @@ class CiscoDriver(BaseDriver):
                 "nxos": "cisco_nxos",
             }
             self._netmiko_conn = ConnectHandler(
-                device_type=device_type_map.get(
-                    self._device_info.platform, "cisco_ios"
-                ),
+                device_type=device_type_map.get(self._device_info.platform, "cisco_ios"),
                 host=self._device_info.hostname,
                 username=self._device_info.username,
                 password=self._device_info.password,
@@ -381,7 +373,7 @@ class CiscoDriver(BaseDriver):
         """Execute a command via Netmiko and return raw output."""
         try:
             conn = self._get_netmiko_connection()
-            return conn.send_command(command, read_timeout=self._device_info.timeout)
+            return str(conn.send_command(command, read_timeout=self._device_info.timeout))
         except Exception as exc:
             raise CommandExecutionError(
                 f"Command execution failed: {exc}",
@@ -392,7 +384,7 @@ class CiscoDriver(BaseDriver):
     def _safe_get_counters(self) -> dict[str, Any]:
         """Attempt to get interface counters; return empty on failure."""
         try:
-            return self._napalm_driver.get_interfaces_counters()
+            return dict(self._napalm_driver.get_interfaces_counters())
         except Exception:
             self._logger.debug("Interface counters unavailable", exc_info=True)
             return {}

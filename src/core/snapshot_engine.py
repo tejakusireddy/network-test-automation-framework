@@ -62,9 +62,7 @@ class SnapshotEngine:
             SnapshotError: If capture or persistence fails.
 
         """
-        self._logger.info(
-            "Capturing snapshot '%s' from %s", snapshot_id, driver.hostname
-        )
+        self._logger.info("Capturing snapshot '%s' from %s", snapshot_id, driver.hostname)
         try:
             snapshot = driver.take_snapshot(snapshot_id)
             self._persist(snapshot)
@@ -78,9 +76,7 @@ class SnapshotEngine:
                 details={"error": str(exc)},
             ) from exc
 
-    def capture_multiple(
-        self, drivers: list[BaseDriver], snapshot_id: str
-    ) -> dict[str, Snapshot]:
+    def capture_multiple(self, drivers: list[BaseDriver], snapshot_id: str) -> dict[str, Snapshot]:
         """Capture snapshots from multiple devices.
 
         Args:
@@ -241,15 +237,11 @@ class SnapshotEngine:
 
             if pre_val is None and post_val is not None:
                 result.diffs.append(
-                    DiffEntry(
-                        category=category, key=key, action="added", after=post_val
-                    )
+                    DiffEntry(category=category, key=key, action="added", after=post_val)
                 )
             elif pre_val is not None and post_val is None:
                 result.diffs.append(
-                    DiffEntry(
-                        category=category, key=key, action="removed", before=pre_val
-                    )
+                    DiffEntry(category=category, key=key, action="removed", before=pre_val)
                 )
             elif pre_val != post_val:
                 result.diffs.append(

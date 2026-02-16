@@ -63,7 +63,7 @@ class JuniperDriver(BaseDriver):
 
         """
         try:
-            from jnpr.junos import Device  # type: ignore[import-untyped]
+            from jnpr.junos import Device
 
             self._device = Device(
                 host=self._device_info.hostname,
@@ -114,7 +114,7 @@ class JuniperDriver(BaseDriver):
 
         """
         self._ensure_connected()
-        rpc_reply = self._device.rpc.get_bgp_neighbor_information()  # type: ignore[union-attr]
+        rpc_reply = self._device.rpc.get_bgp_neighbor_information()
         neighbors: dict[str, Any] = {}
 
         for item in rpc_reply.findall(".//bgp-peer"):
@@ -146,7 +146,7 @@ class JuniperDriver(BaseDriver):
 
         """
         self._ensure_connected()
-        rpc_reply = self._device.rpc.get_interface_information(terse=True)  # type: ignore[union-attr]
+        rpc_reply = self._device.rpc.get_interface_information(terse=True)
         interfaces: dict[str, Any] = {}
 
         for iface in rpc_reply.findall(".//physical-interface"):
@@ -160,12 +160,8 @@ class JuniperDriver(BaseDriver):
                 "description": self._text(iface, "description"),
                 "speed": self._text(iface, "speed"),
                 "mtu": self._text(iface, "mtu"),
-                "input_errors": self._int_text(
-                    iface, ".//input-error-list/input-errors"
-                ),
-                "output_errors": self._int_text(
-                    iface, ".//output-error-list/output-errors"
-                ),
+                "input_errors": self._int_text(iface, ".//input-error-list/input-errors"),
+                "output_errors": self._int_text(iface, ".//output-error-list/output-errors"),
             }
 
         self._logger.debug("Retrieved %d interfaces", len(interfaces))
@@ -179,7 +175,7 @@ class JuniperDriver(BaseDriver):
 
         """
         self._ensure_connected()
-        rpc_reply = self._device.rpc.get_route_information(table="inet.0")  # type: ignore[union-attr]
+        rpc_reply = self._device.rpc.get_route_information(table="inet.0")
         routes: dict[str, Any] = {}
 
         for rt in rpc_reply.findall(".//rt"):
@@ -193,9 +189,8 @@ class JuniperDriver(BaseDriver):
                 "prefix": prefix,
                 "protocol": self._text(entry, "protocol-name"),
                 "preference": self._int_text(entry, "preference"),
-                "next_hop": self._text(
-                    entry, ".//nh/to"
-                ) or self._text(entry, ".//nh/nh-local-interface"),
+                "next_hop": self._text(entry, ".//nh/to")
+                or self._text(entry, ".//nh/nh-local-interface"),
                 "age": self._text(entry, "age"),
                 "metric": self._int_text(entry, "metric"),
             }
@@ -211,7 +206,7 @@ class JuniperDriver(BaseDriver):
 
         """
         self._ensure_connected()
-        rpc_reply = self._device.rpc.get_lldp_neighbors_information()  # type: ignore[union-attr]
+        rpc_reply = self._device.rpc.get_lldp_neighbors_information()
         neighbors: dict[str, Any] = {}
 
         for item in rpc_reply.findall(".//lldp-neighbor-information"):
@@ -222,12 +217,8 @@ class JuniperDriver(BaseDriver):
                 "local_interface": local_if,
                 "remote_system": self._text(item, "lldp-remote-system-name"),
                 "remote_port": self._text(item, "lldp-remote-port-id"),
-                "remote_port_description": self._text(
-                    item, "lldp-remote-port-description"
-                ),
-                "remote_chassis_id": self._text(
-                    item, "lldp-remote-chassis-id"
-                ),
+                "remote_port_description": self._text(item, "lldp-remote-port-description"),
+                "remote_chassis_id": self._text(item, "lldp-remote-chassis-id"),
             }
 
         self._logger.debug("Retrieved %d LLDP neighbors", len(neighbors))
@@ -242,9 +233,7 @@ class JuniperDriver(BaseDriver):
         """
         self._ensure_connected()
         try:
-            rpc_reply = self._device.rpc.get_route_information(  # type: ignore[union-attr]
-                table="default-switch.evpn.0"
-            )
+            rpc_reply = self._device.rpc.get_route_information(table="default-switch.evpn.0")
         except Exception:
             self._logger.debug("EVPN table not available, returning empty")
             return {}
@@ -288,7 +277,7 @@ class JuniperDriver(BaseDriver):
         """
         self._ensure_connected()
         try:
-            from jnpr.junos.utils.config import Config  # type: ignore[import-untyped]
+            from jnpr.junos.utils.config import Config
 
             with Config(self._device, mode="exclusive") as cu:
                 cu.load(config, format="set", merge=True)
@@ -317,7 +306,7 @@ class JuniperDriver(BaseDriver):
         """
         self._ensure_connected()
         try:
-            result = self._device.cli(command, warning=False)  # type: ignore[union-attr]
+            result = self._device.cli(command, warning=False)
             return str(result)
         except Exception as exc:
             raise CommandExecutionError(
@@ -344,7 +333,7 @@ class JuniperDriver(BaseDriver):
 
         """
         try:
-            from jnpr.jsnapy import SnapAdmin  # type: ignore[import-untyped]
+            from jnpr.jsnapy import SnapAdmin
 
             js_config = {
                 "hosts": [
@@ -359,11 +348,11 @@ class JuniperDriver(BaseDriver):
             }
             snap = SnapAdmin()
             if action == "snap_pre":
-                return snap.snap(js_config, "pre")  # type: ignore[return-value]
+                return dict(snap.snap(js_config, "pre"))
             elif action == "snap_post":
-                return snap.snap(js_config, "post")  # type: ignore[return-value]
+                return dict(snap.snap(js_config, "post"))
             else:
-                return snap.check(js_config, "pre", "post")  # type: ignore[return-value]
+                return dict(snap.check(js_config, "pre", "post"))
         except ImportError:
             self._logger.warning("jsnapy not installed, skipping JSNAPy tests")
             return {"error": "jsnapy not installed"}

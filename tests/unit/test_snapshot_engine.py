@@ -130,9 +130,7 @@ class TestSnapshotEngine:
         for name in ["spine1", "spine2"]:
             d = MagicMock(spec=BaseDriver)
             d.hostname = name
-            d.take_snapshot.return_value = Snapshot(
-                snapshot_id="bulk", device=name
-            )
+            d.take_snapshot.return_value = Snapshot(snapshot_id="bulk", device=name)
             drivers.append(d)
 
         results = engine.capture_multiple(drivers, "bulk")
@@ -146,9 +144,7 @@ class TestSnapshotEngine:
         mock_driver: MagicMock,
     ) -> None:
         engine.capture(mock_driver, "snap-a")
-        mock_driver.take_snapshot.return_value = Snapshot(
-            snapshot_id="snap-b", device="spine1"
-        )
+        mock_driver.take_snapshot.return_value = Snapshot(snapshot_id="snap-b", device="spine1")
         engine.capture(mock_driver, "snap-b")
         files = engine.list_snapshots(device="spine1")
         assert len(files) == 2

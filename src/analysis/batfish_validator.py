@@ -66,7 +66,7 @@ class BatfishValidator:
 
         """
         try:
-            from pybatfish.client.session import Session  # type: ignore[import-untyped]
+            from pybatfish.client.session import Session
 
             self._session = Session(host=self._host)
             self._logger.info("Connected to Batfish at %s:%d", self._host, self._port)
@@ -101,7 +101,6 @@ class BatfishValidator:
             self.connect()
 
         try:
-
             self._network = network_name
             self._snapshot = snapshot_name
             self._session.set_network(network_name)
@@ -139,17 +138,15 @@ class BatfishValidator:
         """
         self._ensure_snapshot()
         try:
-            from pybatfish.question.bfq import bfq  # type: ignore[import-untyped]
+            from pybatfish.question.bfq import bfq
 
             result = bfq.routes(nodes=node, vrfs=vrf).answer()
-            routes = result.frame().to_dict(orient="records")
+            routes: list[dict[str, Any]] = list(result.frame().to_dict(orient="records"))
             self._logger.debug("Batfish returned %d routes for %s", len(routes), node)
             return routes
         except Exception as exc:
             self._logger.error("Routing table query failed: %s", exc)
-            raise ValidationError(
-                f"Routing table query failed for {node}: {exc}"
-            ) from exc
+            raise ValidationError(f"Routing table query failed for {node}: {exc}") from exc
 
     def traceroute(
         self,
@@ -170,8 +167,8 @@ class BatfishValidator:
         """
         self._ensure_snapshot()
         try:
-            from pybatfish.datamodel.flow import HeaderConstraints  # type: ignore[import-untyped]
-            from pybatfish.question.bfq import bfq  # type: ignore[import-untyped]
+            from pybatfish.datamodel.flow import HeaderConstraints
+            from pybatfish.question.bfq import bfq
 
             headers = HeaderConstraints(dstIps=dst_ip)
             if src_ip:
@@ -181,16 +178,12 @@ class BatfishValidator:
                 startLocation=src_node,
                 headers=headers,
             ).answer()
-            traces = result.frame().to_dict(orient="records")
-            self._logger.debug(
-                "Traceroute from %s to %s: %d traces", src_node, dst_ip, len(traces)
-            )
+            traces: list[dict[str, Any]] = list(result.frame().to_dict(orient="records"))
+            self._logger.debug("Traceroute from %s to %s: %d traces", src_node, dst_ip, len(traces))
             return traces
         except Exception as exc:
             self._logger.error("Traceroute query failed: %s", exc)
-            raise ValidationError(
-                f"Traceroute failed from {src_node} to {dst_ip}: {exc}"
-            ) from exc
+            raise ValidationError(f"Traceroute failed from {src_node} to {dst_ip}: {exc}") from exc
 
     def check_acl_reachability(
         self,
@@ -207,21 +200,19 @@ class BatfishValidator:
         """
         self._ensure_snapshot()
         try:
-            from pybatfish.question.bfq import bfq  # type: ignore[import-untyped]
+            from pybatfish.question.bfq import bfq
 
             kwargs: dict[str, Any] = {}
             if node:
                 kwargs["nodes"] = node
 
             result = bfq.filterLineReachability(**kwargs).answer()
-            lines = result.frame().to_dict(orient="records")
+            lines: list[dict[str, Any]] = list(result.frame().to_dict(orient="records"))
             self._logger.info("Found %d unreachable ACL lines", len(lines))
             return lines
         except Exception as exc:
             self._logger.error("ACL reachability check failed: %s", exc)
-            raise ValidationError(
-                f"ACL reachability check failed: {exc}"
-            ) from exc
+            raise ValidationError(f"ACL reachability check failed: {exc}") from exc
 
     def detect_routing_loops(self) -> list[dict[str, Any]]:
         """Detect forwarding loops in the modeled network.
@@ -232,10 +223,10 @@ class BatfishValidator:
         """
         self._ensure_snapshot()
         try:
-            from pybatfish.question.bfq import bfq  # type: ignore[import-untyped]
+            from pybatfish.question.bfq import bfq
 
             result = bfq.detectLoops().answer()
-            loops = result.frame().to_dict(orient="records")
+            loops: list[dict[str, Any]] = list(result.frame().to_dict(orient="records"))
             if loops:
                 self._logger.warning("Detected %d routing loops!", len(loops))
             else:
@@ -243,9 +234,7 @@ class BatfishValidator:
             return loops
         except Exception as exc:
             self._logger.error("Loop detection failed: %s", exc)
-            raise ValidationError(
-                f"Routing loop detection failed: {exc}"
-            ) from exc
+            raise ValidationError(f"Routing loop detection failed: {exc}") from exc
 
     def verify_bgp_sessions(
         self,
@@ -262,21 +251,19 @@ class BatfishValidator:
         """
         self._ensure_snapshot()
         try:
-            from pybatfish.question.bfq import bfq  # type: ignore[import-untyped]
+            from pybatfish.question.bfq import bfq
 
             kwargs: dict[str, Any] = {}
             if node:
                 kwargs["nodes"] = node
 
             result = bfq.bgpSessionStatus(**kwargs).answer()
-            sessions = result.frame().to_dict(orient="records")
+            sessions: list[dict[str, Any]] = list(result.frame().to_dict(orient="records"))
             self._logger.debug("BGP session check: %d entries", len(sessions))
             return sessions
         except Exception as exc:
             self._logger.error("BGP session verification failed: %s", exc)
-            raise ValidationError(
-                f"BGP session verification failed: {exc}"
-            ) from exc
+            raise ValidationError(f"BGP session verification failed: {exc}") from exc
 
     def compare_routing_tables(
         self,
@@ -297,31 +284,25 @@ class BatfishValidator:
         """
         self._ensure_snapshot()
         try:
-            from pybatfish.question.bfq import bfq  # type: ignore[import-untyped]
+            from pybatfish.question.bfq import bfq
 
             result = bfq.routes(
                 nodes=node,
                 snapshot=snapshot_a,
                 reference_snapshot=snapshot_b,
             ).answer()
-            diffs = result.frame().to_dict(orient="records")
+            diffs: list[dict[str, Any]] = list(result.frame().to_dict(orient="records"))
             self._logger.info("Route diffs for %s: %d entries", node, len(diffs))
             return diffs
         except Exception as exc:
             self._logger.error("Route comparison failed: %s", exc)
-            raise ValidationError(
-                f"Route comparison failed for {node}: {exc}"
-            ) from exc
+            raise ValidationError(f"Route comparison failed for {node}: {exc}") from exc
 
     # -- Internal helpers ---------------------------------------------------
 
     def _ensure_snapshot(self) -> None:
         """Raise if no snapshot has been initialized."""
         if self._session is None:
-            raise ValidationError(
-                "Not connected to Batfish — call connect() first"
-            )
+            raise ValidationError("Not connected to Batfish — call connect() first")
         if not self._snapshot:
-            raise ValidationError(
-                "No snapshot initialized — call init_snapshot() first"
-            )
+            raise ValidationError("No snapshot initialized — call init_snapshot() first")

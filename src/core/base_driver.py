@@ -208,9 +208,7 @@ class BaseDriver(abc.ABC):
         """Initialize the driver with device connection parameters."""
         self._device_info = device_info
         self._connected: bool = False
-        self._logger = logging.getLogger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self._logger = logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
     # -- Properties ---------------------------------------------------------
 
@@ -553,7 +551,7 @@ class BaseDriver(abc.ABC):
             except Exception as exc:
                 last_exc = exc
                 if attempt < max_attempts:
-                    delay = backoff_base ** attempt
+                    delay = backoff_base**attempt
                     self._logger.warning(
                         "Attempt %d/%d for %s failed (%s), retrying in %.1fs",
                         attempt,
