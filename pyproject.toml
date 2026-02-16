@@ -105,10 +105,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/example/network-test-automation-framework"
-Repository = "https://github.com/example/network-test-automation-framework"
-Documentation = "https://example.github.io/network-test-automation-framework"
-Issues = "https://github.com/example/network-test-automation-framework/issues"
+Homepage = "https://github.com/tejakusireddy/network-test-automation-framework"
+Repository = "https://github.com/tejakusireddy/network-test-automation-framework"
+Documentation = "https://tejakusireddy.github.io/network-test-automation-framework"
+Issues = "https://github.com/tejakusireddy/network-test-automation-framework/issues"
 
 # ---------------------------------------------------------------------------
 # Tool configuration

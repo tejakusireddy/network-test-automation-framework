@@ -1,6 +1,6 @@
 # Network Test Automation Framework
 
-[![CI](https://github.com/example/network-test-automation-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/example/network-test-automation-framework/actions/workflows/ci.yml)
+[![CI](https://github.com/tejakusireddy/network-test-automation-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/tejakusireddy/network-test-automation-framework/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -76,7 +76,7 @@ graph TB
 
 ```bash
 # Clone the repository
-git clone https://github.com/example/network-test-automation-framework.git
+git clone https://github.com/tejakusireddy/network-test-automation-framework.git
 cd network-test-automation-framework
 
 # Create a virtual environment

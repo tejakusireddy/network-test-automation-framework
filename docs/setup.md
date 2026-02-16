@@ -11,7 +11,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/example/network-test-automation-framework.git
+git clone https://github.com/tejakusireddy/network-test-automation-framework.git
 cd network-test-automation-framework
 
 # Create a virtual environment
