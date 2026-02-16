@@ -41,7 +41,7 @@ graph TB
     end
 
     subgraph "Infrastructure"
-        CL["Containerlab<br/>7-node cRPD fabric"]
+        CL["Docker Compose<br/>7-node FRR fabric"]
         NI["Nornir Inventory"]
         IX["Ixia Traffic Gen"]
     end
@@ -69,7 +69,7 @@ graph TB
 - **Robot Framework Integration** — Keyword-driven test suites for topology, BGP, EVPN-VXLAN, and failover convergence
 - **JSNAPy Snapshot Testing** — YAML-based pre/post state comparison for Juniper devices
 - **Rich HTML Reports** — Jinja2-templated reports with Mermaid topology diagrams, pass/fail summaries, and AI triage output
-- **Containerlab Topology** — 7-node leaf-spine fabric (2 spines + 4 leaves + WAN edge) with OSPF underlay and iBGP/EVPN overlay
+- **Docker Compose Lab** — 7-node FRR-based leaf-spine fabric (2 spines + 4 leaves + WAN edge) with OSPF underlay and iBGP/EVPN overlay
 - **Full CI/CD Pipeline** — GitHub Actions for linting, type checking, testing, and release automation
 
 ## Quick Start
@@ -172,23 +172,26 @@ print(report.to_markdown())
 
 ## Lab Topology
 
-Deploy the 7-node containerlab topology:
+Deploy the 7-node FRR-based lab topology:
 
 ```bash
 # Start the fabric
 make topology-up
 
-# Verify connectivity
-make topology-inspect
+# Check BGP peering status
+make topology-status
+
+# Access any router's CLI
+docker exec -it clab-spine1 vtysh
 
 # Tear down
 make topology-down
 ```
 
 The topology includes:
-- **2 Spine switches** (cRPD) — OSPF + iBGP Route Reflectors
-- **4 Leaf switches** (cRPD) — EVPN-VXLAN with VNI 10100/10200
-- **1 WAN Edge** (cRPD) — eBGP peering to spine1
+- **2 Spine routers** (FRR) — OSPF underlay + iBGP Route Reflectors (AS 65000)
+- **4 Leaf routers** (FRR) — iBGP to both spines with L2VPN EVPN address family
+- **1 WAN Edge router** (FRR) — eBGP (AS 65100) peering to spine1
 
 ## Project Structure
 
@@ -208,7 +211,7 @@ network-test-automation-framework/
 │   └── conftest.py         # Shared pytest fixtures
 ├── robot_tests/            # Robot Framework test suites
 ├── jsnapy/                 # JSNAPy snapshot test definitions
-├── topology/               # Containerlab topology + device configs
+├── topology/               # Docker Compose FRR lab + device configs
 ├── docs/                   # Architecture, setup, contributing guides
 ├── .github/workflows/      # CI/CD pipeline definitions
 ├── pyproject.toml          # Python packaging + tool configuration

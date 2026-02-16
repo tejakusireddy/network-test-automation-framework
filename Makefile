@@ -1,4 +1,4 @@
-.PHONY: help install dev-install test lint format type-check clean topology-up topology-down run-robot run-batfish report
+.PHONY: help install dev-install test lint format type-check clean topology-up topology-down topology-status run-robot run-batfish report
 
 PYTHON := python3
 PIP := $(PYTHON) -m pip
@@ -9,7 +9,6 @@ BLACK := $(PYTHON) -m black
 ROBOT := $(PYTHON) -m robot
 COVERAGE := $(PYTHON) -m pytest --cov=src --cov-report=html --cov-report=term-missing
 
-TOPOLOGY_FILE := topology/containerlab-topology.yml
 REPORT_OUTPUT := output/report.html
 
 help: ## Show this help message
@@ -57,14 +56,14 @@ clean: ## Remove build artifacts and caches
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 
-topology-up: ## Start the containerlab topology
-	sudo containerlab deploy --topo $(TOPOLOGY_FILE) --reconfigure
+topology-up: ## Start the docker-compose FRR lab topology
+	$(MAKE) -C topology lab-up
 
-topology-down: ## Destroy the containerlab topology
-	sudo containerlab destroy --topo $(TOPOLOGY_FILE) --cleanup
+topology-down: ## Tear down the docker-compose FRR lab topology
+	$(MAKE) -C topology lab-down
 
-topology-inspect: ## Show containerlab topology status
-	sudo containerlab inspect --topo $(TOPOLOGY_FILE)
+topology-status: ## Show lab container and BGP status
+	$(MAKE) -C topology lab-status
 
 run-robot: ## Run Robot Framework test suites
 	$(ROBOT) --outputdir output/robot \

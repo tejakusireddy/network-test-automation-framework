@@ -1,0 +1,148 @@
+---
+# FRR-based 7-node leaf-spine data center fabric
+#
+# Topology:
+#   spine1, spine2  — route reflectors (AS 65000)
+#   leaf1–leaf4     — ToR switches (AS 65000, iBGP to spines)
+#   wan-edge        — border router (AS 65100, eBGP to spine1)
+#
+# Networks:
+#   mgmt     — 172.20.20.0/24  (management / SSH access)
+#   underlay — 10.0.0.0/16     (shared fabric — all BGP/OSPF peering)
+#
+# Usage:
+#   docker compose up -d
+#   docker exec -it clab-spine1 vtysh
+
+services:
+  # =====================================================================
+  # Spine layer
+  # =====================================================================
+  spine1:
+    image: quay.io/frrouting/frr:10.3.1
+    container_name: clab-spine1
+    hostname: spine1
+    privileged: true
+    volumes:
+      - ./frr/spine1/frr.conf:/etc/frr/frr.conf
+      - ./frr/spine1/daemons:/etc/frr/daemons
+    networks:
+      mgmt:
+        ipv4_address: 172.20.20.11
+      underlay:
+        ipv4_address: 10.0.1.1
+    restart: unless-stopped
+
+  spine2:
+    image: quay.io/frrouting/frr:10.3.1
+    container_name: clab-spine2
+    hostname: spine2
+    privileged: true
+    volumes:
+      - ./frr/spine2/frr.conf:/etc/frr/frr.conf
+      - ./frr/spine2/daemons:/etc/frr/daemons
+    networks:
+      mgmt:
+        ipv4_address: 172.20.20.12
+      underlay:
+        ipv4_address: 10.0.1.2
+    restart: unless-stopped
+
+  # =====================================================================
+  # Leaf layer
+  # =====================================================================
+  leaf1:
+    image: quay.io/frrouting/frr:10.3.1
+    container_name: clab-leaf1
+    hostname: leaf1
+    privileged: true
+    volumes:
+      - ./frr/leaf1/frr.conf:/etc/frr/frr.conf
+      - ./frr/leaf1/daemons:/etc/frr/daemons
+    networks:
+      mgmt:
+        ipv4_address: 172.20.20.21
+      underlay:
+        ipv4_address: 10.0.1.11
+    restart: unless-stopped
+
+  leaf2:
+    image: quay.io/frrouting/frr:10.3.1
+    container_name: clab-leaf2
+    hostname: leaf2
+    privileged: true
+    volumes:
+      - ./frr/leaf2/frr.conf:/etc/frr/frr.conf
+      - ./frr/leaf2/daemons:/etc/frr/daemons
+    networks:
+      mgmt:
+        ipv4_address: 172.20.20.22
+      underlay:
+        ipv4_address: 10.0.1.12
+    restart: unless-stopped
+
+  leaf3:
+    image: quay.io/frrouting/frr:10.3.1
+    container_name: clab-leaf3
+    hostname: leaf3
+    privileged: true
+    volumes:
+      - ./frr/leaf3/frr.conf:/etc/frr/frr.conf
+      - ./frr/leaf3/daemons:/etc/frr/daemons
+    networks:
+      mgmt:
+        ipv4_address: 172.20.20.23
+      underlay:
+        ipv4_address: 10.0.1.13
+    restart: unless-stopped
+
+  leaf4:
+    image: quay.io/frrouting/frr:10.3.1
+    container_name: clab-leaf4
+    hostname: leaf4
+    privileged: true
+    volumes:
+      - ./frr/leaf4/frr.conf:/etc/frr/frr.conf
+      - ./frr/leaf4/daemons:/etc/frr/daemons
+    networks:
+      mgmt:
+        ipv4_address: 172.20.20.24
+      underlay:
+        ipv4_address: 10.0.1.14
+    restart: unless-stopped
+
+  # =====================================================================
+  # WAN edge
+  # =====================================================================
+  wan-edge:
+    image: quay.io/frrouting/frr:10.3.1
+    container_name: clab-wan-edge
+    hostname: wan-edge
+    privileged: true
+    volumes:
+      - ./frr/wan-edge/frr.conf:/etc/frr/frr.conf
+      - ./frr/wan-edge/daemons:/etc/frr/daemons
+    networks:
+      mgmt:
+        ipv4_address: 172.20.20.100
+      underlay:
+        ipv4_address: 10.0.1.100
+    restart: unless-stopped
+
+# =====================================================================
+# Networks — management + shared underlay
+# =====================================================================
+networks:
+  mgmt:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.20.0/24
+          gateway: 172.20.20.1
+
+  underlay:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/16
+          gateway: 10.0.255.254
