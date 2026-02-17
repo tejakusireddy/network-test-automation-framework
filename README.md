@@ -72,6 +72,29 @@ graph TB
 - **Docker Compose Lab** — 7-node FRR-based leaf-spine fabric (2 spines + 4 leaves + WAN edge) with OSPF underlay and iBGP/EVPN overlay
 - **Full CI/CD Pipeline** — GitHub Actions for linting, type checking, testing, and release automation
 
+## Demo
+
+### Live Integration Tests (57/57 Passing)
+
+Automated validation against a running 7-node FRR spine-leaf fabric:
+
+![Integration Tests](docs/demo-integration-tests.png)
+
+Tests cover:
+- BGP peer establishment across all routers (iBGP + eBGP)
+- OSPF neighbor adjacency verification
+- End-to-end reachability (leaf-to-leaf, leaf-to-WAN)
+- L2VPN EVPN address family activation
+- Failover simulation with BGP soft reset recovery
+
+### AI-Powered Defect Triage
+
+When a test fails, the framework automatically generates a structured root cause analysis using Claude:
+
+![AI Triage Report](docs/demo-ai-triage.png)
+
+The triage module identifies the probable root cause, affected components, severity, and recommended remediation steps — replacing hours of manual log analysis.
+
 ## Quick Start
 
 ```bash
