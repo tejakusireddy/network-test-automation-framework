@@ -126,7 +126,7 @@ addopts = [
     "-m", "not integration",
 ]
 markers = [
-    "integration: marks tests requiring live device connectivity",
+    "integration: marks tests that require the live lab (deselect with '-m \"not integration\"')",
     "slow: marks tests that take a long time to run",
 ]
 
