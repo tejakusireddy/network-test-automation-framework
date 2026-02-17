@@ -1,0 +1,45 @@
+# BGP peer count mismatch due to unreachable external peer 10.0.1.100
+
+**Severity:** HIGH
+**Device:** clab-spine2
+**Test:** test_bgp_peer_count[clab-spine2]
+**Timestamp:** 2026-02-17T05:03:19.187744+00:00
+
+## Summary
+
+Test expected 5 established BGP peers but found 10 total neighbors with at least one peer (10.0.1.100) in Active state and unreachable. The BGP session to external AS 65100 is failing with connection refused errors, indicating either the remote peer is down or there's a connectivity issue.
+
+## Probable Root Cause
+
+External BGP peer 10.0.1.100 (AS 65100) is unreachable - either the remote device is down, BGP daemon not running on port 179, or network connectivity issues between spine2 and the external peer
+
+## Affected Components
+
+BGP, external_peering, network_connectivity
+
+## Recommended Actions
+
+1. Verify network connectivity to 10.0.1.100 using ping and traceroute
+2. Check if BGP daemon is running on peer 10.0.1.100 and listening on port 179
+3. Review BGP peer configuration on both spine2 and 10.0.1.100 for correct AS numbers and authentication
+4. Examine firewall rules or ACLs that might be blocking BGP port 179 traffic
+5. Update test expectations if peer 10.0.1.100 should be excluded from established peer count
+
+## Error Output
+
+```
+AssertionError: clab-spine2: expected 5 established peers, got 10
+BGP router identifier 10.0.0.2, local AS number 65000
+Neighbor 10.0.1.100 state=Active (never established)
+Total number of neighbors 6
+```
+
+## Device Logs
+
+```
+rpd[1234]: BGP peer 10.0.1.100 (External AS 65100) not reachable
+rpd[1234]: BGP_IO_ERROR: Connection refused to 10.0.1.100:179
+rpd[1234]: OSPF neighbor 10.0.0.1 Full on eth0
+rpd[1234]: BGP peer 10.0.1.1 (Internal AS 65000) Established
+```
+
